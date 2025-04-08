@@ -1,0 +1,7 @@
+set $namespace="%SYS"
+Do ##class(Security.Users).UnExpireUserPasswords("*")
+Do ##class(Config.NLS.Locales).Install("jpuw")
+
+set $namespace="USER"
+do $System.OBJ.LoadDir("/opt/src/Test","ck",,1)
+do ##class(Test.Person).load()

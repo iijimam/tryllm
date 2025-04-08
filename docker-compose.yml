@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    # NVIDIA GPUを利用する場合は、以下のオプションを有効にしてください（Docker環境に依存します）。
+    # runtime: nvidia
+    # または device_requests を利用する場合（Docker Compose v2.4以降）
+    #deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "3000:8080"
+    volumes:
+      - open-webui:/app/backend/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+
+  iris:
+    build:
+      context: .
+      dockerfile: ./iris/Dockerfile
+    ports: ["9095:52773","9092:1972"]
+    container_name: iriscontainer1
+    volumes: ["./iris/data:/data","./iris/src:/src"]
+    environment: 
+      - TZ=JST-9
+
+  webgateway:
+    image: containers.intersystems.com/intersystems/webgateway:2025.1
+    container_name: WG
+    init: true
+    ports:
+      - 8080:80
+      #- 8443:443
+    environment:
+    - ISC_CSP_CONF_FILE=/webgateway-shared/CSP.conf
+    - ISC_CSP_INI_FILE=/webgateway-shared/CSP.ini
+    volumes:
+    - ./webgateway:/webgateway-shared
+
+volumes:
+  ollama:
+  open-webui:
