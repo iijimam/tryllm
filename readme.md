@@ -39,6 +39,8 @@ ollamaにTest.Personからとった情報をプロンプトに追加して質問
 > AskOllamaの第1引数を含むPersonを検索して年齢を取得し、システムプロンプトに年齢＋女性を設定してます。ユーザプロンプトに第２引数の情報指定して、ollamaにpost して回答を得てます。
 
 ```
+docker exec -it iriscontainer1 bash
+iris session iris
 do ##class(Test.Utils).AskOllama("さゆり","一番かかりやすい病気")
 ```
 
