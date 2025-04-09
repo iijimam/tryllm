@@ -1,5 +1,7 @@
 # Open source LLMテスト
 
+参考ページ：https://qiita.com/RyutoYoda/items/ecdfbef8c73aae64aa45
+
 ## ollama モデルのダウンロード
 
 - コンテナ開始後、ollamaのコンテナにログインして以下実行
