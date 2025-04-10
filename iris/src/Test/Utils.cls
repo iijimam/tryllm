@@ -21,6 +21,8 @@ ClassMethod AskOllama(key As %String, input As %String) [ Language = python ]
 import requests
 import json
 import iris
+import time
+start = time.time()  # 現在時刻（処理開始前）を取得
 
 system=iris.cls("Test.Utils").Test(key)
 print(f"システムプロンプト：{system}")
@@ -29,7 +31,7 @@ API_SERVER_URL = "http://ollama:11434/api/chat"
 def main():
     headers = {"Content-Type": "application/json"}
     data = {
-        "model": "llama3",
+        "model": "gemma",
         "messages": [
             {
                 "role": "system",
@@ -56,6 +58,9 @@ def main():
     print(answer_text)
 
 main()
+end = time.time()  # 現在時刻（処理完了後）を取得
+time_diff = end - start  # 処理完了後の時刻から処理開始前の時刻を減算する
+print(f"処理時間：{time_diff}")  # 処理にかかった時間データを使用
 }
 
 }

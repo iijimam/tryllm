@@ -11,13 +11,13 @@ services:
     # NVIDIA GPUを利用する場合は、以下のオプションを有効にしてください（Docker環境に依存します）。
     # runtime: nvidia
     # または device_requests を利用する場合（Docker Compose v2.4以降）
-    #deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+    deploy:
+       resources:
+         reservations:
+           devices:
+#             - driver: nvidia
+#               count: all
+              - capabilities: [gpu]
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
