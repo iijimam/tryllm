@@ -31,7 +31,7 @@ API_SERVER_URL = "http://ollama:11434/api/chat"
 def main():
     headers = {"Content-Type": "application/json"}
     data = {
-        "model": "gemma",
+        "model": "pakachan/elyza-llama3-8b",
         "messages": [
             {
                 "role": "system",
