@@ -2,6 +2,8 @@ ARG IMAGE=containers.intersystems.com/intersystems/iris-community:2025.1
 FROM $IMAGE
 
 USER root
+RUN apt update \
+    && apt install git -y
 WORKDIR /opt/src
 RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /opt/src
 USER ${ISC_PACKAGE_MGRUSER}
