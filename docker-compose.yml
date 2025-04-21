@@ -45,8 +45,8 @@ services:
     container_name: WG
     init: true
     ports:
-      - 8080:80
-      #- 8443:443
+      - 80:80
+      #- 443:443
     environment:
     - ISC_CSP_CONF_FILE=/webgateway-shared/CSP.conf
     - ISC_CSP_INI_FILE=/webgateway-shared/CSP.ini

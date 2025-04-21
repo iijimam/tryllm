@@ -1,9 +1,15 @@
 Class FishDetector.Utils
 {
 
+ClassMethod t1(in As %String(MAXLEN=1000)) As %String [ SqlProc ]
+{
+    set ^iijima("t1")=in
+    return "OKよ"
+}
+
 /// LINE社のモデルを利用：画像からベクトル取り出す
 /// リスト戻る
-ClassMethod getImageVec(file As %String) As %SYS.Python [ Language = python ]
+ClassMethod getImageVec(file As %String(MAXLEN=1000)) As %SYS.Python [ Language = python ]
 {
 import io
 import requests
@@ -39,7 +45,7 @@ return imagevector.tolist()
 /// 引数に画像を指定
 /// 画像と一致する名称をベクトルを検索し、補足情報（FishInfo）を入手
 /// 補足情報はRAGとして使う
-ClassMethod searchVec(file As %String) As %SYS.Python [ Language = python ]
+ClassMethod searchVec(file As %String(MAXLEN=1000)) As %SYS.Python [ Language = python, SqlProc ]
 {
 import iris
 import time
@@ -49,7 +55,7 @@ try:
     veclist=iris.cls(__name__).getImageVec(file)
     end = time.time()  # 現在時刻（処理完了後）を取得
     time_diff = end - start  # 処理完了後の時刻から処理開始前の時刻を減算する
-    print(f"★★ 画像のベクトル化の時間：{time_diff}")  # 処理にかかった時間データを使用
+    #print(f"★★ 画像のベクトル化の時間：{time_diff}")  # 処理にかかった時間データを使用
 
     #print(vec[0].tolist())
     # TO_VECTOR()に指定するため、リスト→文字列→[] 取り除く
@@ -61,12 +67,17 @@ try:
     sql="select top 1 FishName,FishInfo,VECTOR_COSINE(FishNameVec, TO_VECTOR(?, DOUBLE, 384)) as cos,fishinfo from FishDetector.Fish ORDER BY cos desc"
     stmt=iris.sql.prepare(sql)
     rset=stmt.execute(vecparm)
-    for row in rset:
-        print(row)
+    #for row in rset:
+    #   print(row)
+    row=next(rset)
+    #魚の名称と魚の補足情報をカンマ区切りの文字列に
+    fishdata=",".join(row[:-2])
+
     end = time.time()  # 現在時刻（処理完了後）を取得
     time_diff = end - start  # 処理完了後の時刻から処理開始前の時刻を減算する
-    print(f"★★ ベクトル検索だけの処理時間：{time_diff}")  # 処理にかかった時間データを使用
-    return row
+    #print(f"★★ ベクトル検索だけの処理時間：{time_diff}")  # 処理にかかった時間データを使用
+    return fishdata
+    #return row
 
 except irisbuiltins.SQLError as ex:
     raise
@@ -85,13 +96,13 @@ import time
 start = time.time()  # 現在時刻（処理開始前）を取得
 
 # 1.画像を与えてベクトル検索で魚名と魚補足情報持ってくる
-# listが戻る 0に魚名,1に魚補足情報
+# 文字列が戻る カンマ1個目に魚名,2個目に魚補足情報
 rset=iris.cls(__name__).searchVec(file)
 
-print(f"\n画像の魚は {rset[0]} です。")
+print(f"\n画像の魚は {rset.split(",")[0]} です。")
 
 # 2.魚補足情報をシステムプロンプトに使いLLMにレシピを聞く
-answer=iris.cls(__name__).AskOllama(rset[1],key)
+answer=iris.cls(__name__).AskOllama(rset.split(",")[1],key)
 
 print(f"\n*****戻ってきた答え*****\n{answer}")
 end = time.time()  # 現在時刻（処理完了後）を取得
